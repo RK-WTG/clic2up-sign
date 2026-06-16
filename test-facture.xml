@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TEIF version="1.8.8" controlingAgency="TTN">
+  <InvoiceHeader>
+    <MessageSenderIdentifier type="I-01">1557686R</MessageSenderIdentifier>
+    <MessageRecieverIdentifier>TTN</MessageRecieverIdentifier>
+  </InvoiceHeader>
+  <InvoiceBody>
+    <Bgm>
+      <DocumentIdentifier>FC20260001</DocumentIdentifier>
+      <DocumentType code="I-11">Facture</DocumentType>
+    </Bgm>
+    <Dtm>
+      <DateText functionCode="I-31" format="ddMMyy">270226</DateText>
+    </Dtm>
+    <PartnerSection>
+      <PartnerDetails functionCode="I-61">
+        <Nad>
+          <PartnerIdentifier type="I-01">1557686R</PartnerIdentifier>
+          <PartnerName>SOCIETE WEBATG</PartnerName>
+        </Nad>
+      </PartnerDetails>
+      <PartnerDetails functionCode="I-62">
+        <Nad>
+          <PartnerIdentifier type="I-01">1234567A</PartnerIdentifier>
+          <PartnerName>CLIENT TEST</PartnerName>
+        </Nad>
+      </PartnerDetails>
+    </PartnerSection>
+    <LinSection>
+      <Lin>
+        <ItemIdentifier>ITEM-001</ItemIdentifier>
+        <LinImd>
+          <ItemCode>PROD-001</ItemCode>
+          <ItemDescription>Service de developpement</ItemDescription>
+        </LinImd>
+        <LinQty>
+          <Quantity measurementUnit="PCE">1</Quantity>
+        </LinQty>
+        <LinTax>
+          <TaxTypeName code="I-161">TVA</TaxTypeName>
+          <TaxDetails>
+            <TaxRate>19</TaxRate>
+          </TaxDetails>
+        </LinTax>
+        <LinMoa>
+          <MoaDetails>
+            <Moa currencyCodeList="ISO_4217" amountTypeCode="I-171">
+              <Amount currencyIdentifier="TND">1000.000</Amount>
+            </Moa>
+          </MoaDetails>
+          <MoaDetails>
+            <Moa currencyCodeList="ISO_4217" amountTypeCode="I-173">
+              <Amount currencyIdentifier="TND">190.000</Amount>
+            </Moa>
+          </MoaDetails>
+          <MoaDetails>
+            <Moa currencyCodeList="ISO_4217" amountTypeCode="I-174">
+              <Amount currencyIdentifier="TND">1190.000</Amount>
+            </Moa>
+          </MoaDetails>
+        </LinMoa>
+      </Lin>
+    </LinSection>
+    <InvoiceMoa>
+      <AmountDetails>
+        <Moa currencyCodeList="ISO_4217" amountTypeCode="I-172">
+          <Amount currencyIdentifier="TND">1000.000</Amount>
+        </Moa>
+      </AmountDetails>
+      <AmountDetails>
+        <Moa currencyCodeList="ISO_4217" amountTypeCode="I-173">
+          <Amount currencyIdentifier="TND">190.000</Amount>
+        </Moa>
+      </AmountDetails>
+      <AmountDetails>
+        <Moa currencyCodeList="ISO_4217" amountTypeCode="I-174">
+          <Amount currencyIdentifier="TND">1190.000</Amount>
+        </Moa>
+      </AmountDetails>
+    </InvoiceMoa>
+    <InvoiceTax>
+      <InvoiceTaxDetails>
+        <Tax>
+          <TaxTypeName code="I-161">TVA</TaxTypeName>
+          <TaxDetails>
+            <TaxRate>19</TaxRate>
+          </TaxDetails>
+        </Tax>
+        <AmountDetails>
+          <Moa currencyCodeList="ISO_4217" amountTypeCode="I-176">
+            <Amount currencyIdentifier="TND">1000.000</Amount>
+          </Moa>
+        </AmountDetails>
+        <AmountDetails>
+          <Moa currencyCodeList="ISO_4217" amountTypeCode="I-173">
+            <Amount currencyIdentifier="TND">190.000</Amount>
+          </Moa>
+        </AmountDetails>
+      </InvoiceTaxDetails>
+    </InvoiceTax>
+  </InvoiceBody>
+</TEIF>

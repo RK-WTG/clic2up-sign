@@ -1,0 +1,17 @@
+# Build output
+target/
+dist/
+packaging/input/*.jar
+dependency-reduced-pom.xml
+
+# Logs
+*.log
+
+# Compiled class files
+*.class
+
+# OS / IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store

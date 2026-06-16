@@ -1,0 +1,16 @@
+Bienvenue dans l'installation de clic2up-sign !
+
+Ce programme installe le service local de signature electronique
+pour l'application clic2up.
+
+Pre-requis :
+  - SafeNet Authentication Client doit etre installe
+  - Une cle USB contenant votre certificat de signature
+
+Fonctionnement :
+  clic2up-sign s'execute en arriere-plan et apparait dans la
+  barre des taches (pres de l'horloge). Il permet a l'application
+  web clic2up de signer electroniquement vos factures au format
+  TEIF via votre cle USB.
+
+Port utilise : 9876 (localhost uniquement)

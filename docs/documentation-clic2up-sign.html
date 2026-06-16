@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation clic2up-sign v1.0.0</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #1a1a2e;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20px 40px;
+            background: #fff;
+        }
+
+        /* Cover page */
+        .cover {
+            page-break-after: always;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 90vh;
+            text-align: center;
+        }
+        .cover-icon {
+            width: 120px; height: 120px;
+            background: #2563eb;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 40px;
+        }
+        .cover-icon svg { width: 60px; height: 60px; }
+        .cover h1 {
+            font-size: 36px;
+            color: #2563eb;
+            margin: 0 0 10px 0;
+            font-weight: 700;
+        }
+        .cover .subtitle {
+            font-size: 18px;
+            color: #64748b;
+            margin-bottom: 60px;
+        }
+        .cover .version {
+            font-size: 14px;
+            color: #94a3b8;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 20px;
+            margin-top: 40px;
+        }
+        .cover .company {
+            font-size: 16px;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        /* TOC */
+        .toc { page-break-after: always; }
+        .toc h2 { color: #2563eb; border-bottom: 3px solid #2563eb; padding-bottom: 10px; }
+        .toc ul { list-style: none; padding: 0; }
+        .toc li {
+            padding: 8px 0;
+            border-bottom: 1px dotted #cbd5e1;
+            display: flex;
+            justify-content: space-between;
+        }
+        .toc li a { text-decoration: none; color: #1a1a2e; font-weight: 500; }
+        .toc li a:hover { color: #2563eb; }
+        .toc .toc-sub { padding-left: 25px; font-weight: 400; font-size: 14px; }
+
+        /* Headings */
+        h1 { font-size: 28px; color: #2563eb; margin-top: 40px; }
+        h2 {
+            font-size: 22px;
+            color: #1e3a5f;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 8px;
+            margin-top: 35px;
+            page-break-after: avoid;
+        }
+        h3 {
+            font-size: 17px;
+            color: #2563eb;
+            margin-top: 25px;
+            page-break-after: avoid;
+        }
+        h4 { font-size: 15px; color: #475569; margin-top: 20px; }
+
+        /* Section numbering */
+        .section { page-break-inside: avoid; }
+        .chapter { page-break-before: always; }
+        .chapter:first-of-type { page-break-before: avoid; }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 13px;
+        }
+        th {
+            background: #2563eb;
+            color: white;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        tr:nth-child(even) { background: #f8fafc; }
+        tr:hover { background: #eff6ff; }
+
+        /* Code */
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            color: #0f172a;
+        }
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12.5px;
+            line-height: 1.5;
+            page-break-inside: avoid;
+        }
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        /* Boxes */
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 12px 16px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+            font-size: 14px;
+        }
+        .warn-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 12px 16px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+            font-size: 14px;
+        }
+
+        /* Diagram */
+        .diagram {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            white-space: pre;
+            page-break-inside: avoid;
+        }
+
+        /* Lists */
+        ul, ol { padding-left: 25px; }
+        li { margin-bottom: 4px; }
+
+        /* Footer */
+        .footer {
+            margin-top: 60px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-blue { background: #dbeafe; color: #1d4ed8; }
+        .badge-green { background: #dcfce7; color: #16a34a; }
+        .badge-orange { background: #fed7aa; color: #c2410c; }
+
+        /* API endpoint */
+        .endpoint {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0 5px 0;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .method {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: monospace;
+            min-width: 50px;
+            text-align: center;
+        }
+        .method-get { background: #dcfce7; color: #16a34a; }
+        .method-post { background: #dbeafe; color: #2563eb; }
+
+        @media print {
+            body { padding: 0; }
+            .cover { min-height: 100vh; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- PAGE DE COUVERTURE -->
+<div class="cover">
+    <div class="cover-icon">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="32" cy="32" r="28" fill="#2563eb"/>
+            <path d="M20 24 Q20 12 32 12 Q44 12 44 24" stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <rect x="16" y="28" width="32" height="24" rx="3" fill="white"/>
+            <circle cx="32" cy="37" r="4" fill="#2563eb"/>
+            <rect x="30" y="40" width="4" height="8" rx="1" fill="#2563eb"/>
+        </svg>
+    </div>
+    <h1>clic2up-sign</h1>
+    <div class="subtitle">Service Local de Signature Electronique<br>pour Factures ElFatoora / TEIF</div>
+    <div class="company">SOCIETE WEBATG</div>
+    <div class="version">
+        Version 1.0.0 &mdash; Fevrier 2026<br>
+        Document technique &amp; guide d'installation
+    </div>
+</div>
+
+<!-- TABLE DES MATIERES -->
+<div class="toc">
+    <h2>Table des matieres</h2>
+    <ul>
+        <li><a href="#ch1">1. Presentation generale</a></li>
+        <li class="toc-sub"><a href="#ch1-1">1.1 Contexte et objectif</a></li>
+        <li class="toc-sub"><a href="#ch1-2">1.2 Architecture</a></li>
+        <li class="toc-sub"><a href="#ch1-3">1.3 Flux de signature</a></li>
+        <li><a href="#ch2">2. Technologies et frameworks</a></li>
+        <li class="toc-sub"><a href="#ch2-1">2.1 Stack technique</a></li>
+        <li class="toc-sub"><a href="#ch2-2">2.2 Dependances Maven</a></li>
+        <li><a href="#ch3">3. Architecture logicielle</a></li>
+        <li class="toc-sub"><a href="#ch3-1">3.1 Structure du projet</a></li>
+        <li class="toc-sub"><a href="#ch3-2">3.2 Classes Java</a></li>
+        <li><a href="#ch4">4. API REST</a></li>
+        <li class="toc-sub"><a href="#ch4-1">4.1 Endpoints</a></li>
+        <li class="toc-sub"><a href="#ch4-2">4.2 Exemples d'appels</a></li>
+        <li><a href="#ch5">5. Signature electronique</a></li>
+        <li class="toc-sub"><a href="#ch5-1">5.1 Standard XAdES-BASELINE-B</a></li>
+        <li class="toc-sub"><a href="#ch5-2">5.2 Politique de signature ElFatoora</a></li>
+        <li class="toc-sub"><a href="#ch5-3">5.3 Acces a la cle USB (PKCS#11)</a></li>
+        <li><a href="#ch6">6. Compilation et packaging</a></li>
+        <li class="toc-sub"><a href="#ch6-1">6.1 Compilation du JAR</a></li>
+        <li class="toc-sub"><a href="#ch6-2">6.2 Packaging en executable Windows</a></li>
+        <li class="toc-sub"><a href="#ch6-3">6.3 Creation de l'installeur</a></li>
+        <li class="toc-sub"><a href="#ch6-4">6.4 Optimisations</a></li>
+        <li><a href="#ch7">7. Installation</a></li>
+        <li class="toc-sub"><a href="#ch7-1">7.1 Pre-requis</a></li>
+        <li class="toc-sub"><a href="#ch7-2">7.2 Procedure d'installation</a></li>
+        <li class="toc-sub"><a href="#ch7-3">7.3 Desinstallation</a></li>
+        <li><a href="#ch8">8. Interface utilisateur</a></li>
+        <li class="toc-sub"><a href="#ch8-1">8.1 Icone System Tray</a></li>
+        <li class="toc-sub"><a href="#ch8-2">8.2 Integration frontend React</a></li>
+        <li><a href="#ch9">9. Securite</a></li>
+        <li><a href="#ch10">10. Depannage</a></li>
+    </ul>
+</div>
+
+<!-- CHAPITRE 1 -->
+<div class="chapter" id="ch1">
+    <h1>1. Presentation generale</h1>
+
+    <h2 id="ch1-1">1.1 Contexte et objectif</h2>
+    <p>
+        <strong>clic2up-sign</strong> est un service local Windows qui permet a l'application web
+        <strong>clic2up</strong> de signer electroniquement des factures au format TEIF (Tunisian Electronic
+        Invoice Format) conformement aux specifications <strong>ElFatoora</strong> de Tunisie TradeNet.
+    </p>
+    <p>
+        La signature electronique necessite un acces materiel a une <strong>cle USB cryptographique</strong>
+        (token) contenant le certificat du signataire. Les navigateurs web ne pouvant pas acceder
+        directement au materiel USB, clic2up-sign fait office de <strong>pont</strong> entre l'application
+        web et la cle USB via un serveur HTTP local.
+    </p>
+
+    <div class="info-box">
+        <strong>Pourquoi un service local ?</strong><br>
+        Un navigateur web ne peut pas acceder a une cle USB via PKCS#11. clic2up-sign joue le meme
+        role que TunSign pour le portail ElFatoora : il recoit les requetes HTTP du navigateur,
+        accede a la cle USB, signe le document et retourne le resultat.
+    </div>
+
+    <h2 id="ch1-2">1.2 Architecture</h2>
+    <div class="diagram">
++----------------------------------------------------------+
+|  Machine du client                                       |
+|                                                          |
+|  +------------+    localhost:9876     +----------------+  |
+|  |  React     | --- POST /sign ----> | clic2up-sign   |  |
+|  |  Frontend  | <-- XML signe ------ | (.exe Windows) |  |
+|  +-----+------+                      +-------+--------+  |
+|        |                                     | PKCS#11   |
+|        |                              +------+--------+  |
+|        |                              | SafeNet +     |  |
+|        |                              | Cle USB       |  |
+|        |                              +---------------+  |
++--------|-------------------------------------------------+
+         | HTTPS
+    +----+------+
+    |  Backend  |
+    |  NestJS   |
+    +----+------+
+         |
+    +----+------+
+    |  AWS S3   |
+    | (stockage)|
+    +-----------+</div>
+
+    <h2 id="ch1-3">1.3 Flux de signature</h2>
+    <ol>
+        <li>L'utilisateur clique <strong>"Signer"</strong> sur une facture dans clic2up</li>
+        <li>Le frontend genere le XML TEIF (sans bloc signature)</li>
+        <li>Le frontend demande le <strong>code PIN</strong> a l'utilisateur</li>
+        <li>Le frontend envoie le XML + PIN au service local (<code>POST http://localhost:9876/sign</code>)</li>
+        <li>clic2up-sign accede a la cle USB via le driver SafeNet (PKCS#11)</li>
+        <li>clic2up-sign construit la signature <strong>XAdES-BASELINE-B</strong> et signe le document</li>
+        <li>Le XML signe complet est retourne au frontend</li>
+        <li>Le frontend envoie le XML signe au backend NestJS pour stockage sur S3</li>
+    </ol>
+</div>
+
+<!-- CHAPITRE 2 -->
+<div class="chapter" id="ch2">
+    <h1>2. Technologies et frameworks</h1>
+
+    <h2 id="ch2-1">2.1 Stack technique</h2>
+    <table>
+        <tr>
+            <th>Composant</th>
+            <th>Technologie</th>
+            <th>Version</th>
+            <th>Role</th>
+        </tr>
+        <tr>
+            <td>Langage</td>
+            <td>Java</td>
+            <td>17 (LTS)</td>
+            <td>Langage principal</td>
+        </tr>
+        <tr>
+            <td>JDK</td>
+            <td>Eclipse Temurin</td>
+            <td>17.0.18.8</td>
+            <td>JDK open-source embarque dans l'exe</td>
+        </tr>
+        <tr>
+            <td>Serveur HTTP</td>
+            <td>Javalin</td>
+            <td>6.4.0</td>
+            <td>Framework HTTP leger (base sur Jetty)</td>
+        </tr>
+        <tr>
+            <td>Signature numerique</td>
+            <td>EU DSS</td>
+            <td>6.0</td>
+            <td>Digital Signature Services (Commission Europeenne)</td>
+        </tr>
+        <tr>
+            <td>Acces cle USB</td>
+            <td>SunPKCS11</td>
+            <td>JDK 17</td>
+            <td>Provider PKCS#11 natif Java</td>
+        </tr>
+        <tr>
+            <td>JSON</td>
+            <td>GSON + Jackson</td>
+            <td>2.11 / 2.17</td>
+            <td>Serialisation JSON</td>
+        </tr>
+        <tr>
+            <td>Build</td>
+            <td>Apache Maven</td>
+            <td>3.9+</td>
+            <td>Gestion des dependances et compilation</td>
+        </tr>
+        <tr>
+            <td>Packaging</td>
+            <td>jpackage</td>
+            <td>JDK 17</td>
+            <td>Creation de l'executable Windows avec JRE embarque</td>
+        </tr>
+        <tr>
+            <td>Installeur</td>
+            <td>Inno Setup</td>
+            <td>6.7.1</td>
+            <td>Creation de l'installeur Windows (.exe setup)</td>
+        </tr>
+        <tr>
+            <td>Interface</td>
+            <td>Java AWT/Swing</td>
+            <td>JDK 17</td>
+            <td>Icone system tray et notifications</td>
+        </tr>
+    </table>
+
+    <h2 id="ch2-2">2.2 Dependances Maven</h2>
+    <table>
+        <tr>
+            <th>Dependance</th>
+            <th>GroupId</th>
+            <th>Version</th>
+            <th>Role</th>
+        </tr>
+        <tr>
+            <td>dss-xades</td>
+            <td>eu.europa.esig.dss</td>
+            <td>6.0</td>
+            <td>Implementation XAdES</td>
+        </tr>
+        <tr>
+            <td>dss-token</td>
+            <td>eu.europa.esig.dss</td>
+            <td>6.0</td>
+            <td>Support PKCS#11 et PKCS#12</td>
+        </tr>
+        <tr>
+            <td>dss-service</td>
+            <td>eu.europa.esig.dss</td>
+            <td>6.0</td>
+            <td>Service de signature</td>
+        </tr>
+        <tr>
+            <td>dss-document</td>
+            <td>eu.europa.esig.dss</td>
+            <td>6.0</td>
+            <td>Validation de documents</td>
+        </tr>
+        <tr>
+            <td>dss-simple-report-jaxb</td>
+            <td>eu.europa.esig.dss</td>
+            <td>6.0</td>
+            <td>Rapports de validation</td>
+        </tr>
+        <tr>
+            <td>javalin</td>
+            <td>io.javalin</td>
+            <td>6.4.0</td>
+            <td>Serveur HTTP REST</td>
+        </tr>
+        <tr>
+            <td>jackson-databind</td>
+            <td>com.fasterxml.jackson.core</td>
+            <td>2.17.2</td>
+            <td>Serialisation JSON (requis par Javalin)</td>
+        </tr>
+        <tr>
+            <td>gson</td>
+            <td>com.google.code.gson</td>
+            <td>2.11.0</td>
+            <td>Parsing JSON des requetes</td>
+        </tr>
+        <tr>
+            <td>logback-classic</td>
+            <td>ch.qos.logback</td>
+            <td>1.4.14</td>
+            <td>Implementation SLF4J pour les logs</td>
+        </tr>
+    </table>
+
+    <div class="info-box">
+        Le plugin <strong>maven-shade-plugin</strong> (3.5.2) est utilise pour creer un fat JAR incluant
+        toutes les dependances, avec le <code>ServicesResourceTransformer</code> pour merger les fichiers
+        SPI (<code>META-INF/services</code>).
+    </div>
+</div>
+
+<!-- CHAPITRE 3 -->
+<div class="chapter" id="ch3">
+    <h1>3. Architecture logicielle</h1>
+
+    <h2 id="ch3-1">3.1 Structure du projet</h2>
+    <pre><code>clic2up-sign/
+  src/main/java/com/clic2up/
+    Main.java                  Point d'entree (CLI + serveur)
+    SigningServer.java         Serveur HTTP REST (Javalin)
+    ElFatooraSignature.java    Logique de signature XAdES-B
+    ElFatooraValidation.java   Validation des signatures
+    Pkcs11TokenJDK17.java      Wrapper PKCS#11 pour JDK 17
+    XmlUtils.java              Utilitaires XML
+    SystemTrayManager.java     Icone barre des taches
+  pom.xml                      Configuration Maven
+  build-exe.bat                Script de packaging (.exe)
+  build-installer.bat          Script de creation de l'installeur
+  installer/
+    clic2up-sign.iss           Script Inno Setup
+    clic2up-sign.ico           Icone de l'application
+    info-avant.txt             Texte pre-installation
+    generate-icon.java         Generateur d'icone
+  packaging/input/
+    clic2up-sign.jar           Fat JAR (genere par Maven)
+  dist/
+    clic2up-sign/              App-image jpackage
+    clic2up-sign-setup.exe     Installeur final</code></pre>
+
+    <h2 id="ch3-2">3.2 Classes Java</h2>
+
+    <h3>Main.java</h3>
+    <p>Point d'entree de l'application. Gere deux modes de fonctionnement :</p>
+    <ul>
+        <li><strong>Mode serveur</strong> (par defaut) : lance le serveur HTTP + icone system tray</li>
+        <li><strong>Mode CLI</strong> : commandes en ligne (signer, valider, lister certificats)</li>
+    </ul>
+    <p>Commandes disponibles :</p>
+    <table>
+        <tr><th>Commande</th><th>Description</th></tr>
+        <tr><td><code>server [--port 9876]</code></td><td>Lance le serveur HTTP</td></tr>
+        <tr><td><code>signer-token &lt;xml&gt; &lt;driver&gt; &lt;pin&gt; &lt;sortie&gt;</code></td><td>Signe avec cle USB</td></tr>
+        <tr><td><code>signer-p12 &lt;xml&gt; &lt;p12&gt; &lt;mdp&gt; &lt;sortie&gt;</code></td><td>Signe avec fichier PKCS#12</td></tr>
+        <tr><td><code>valider &lt;xml_signe&gt;</code></td><td>Valide une signature</td></tr>
+        <tr><td><code>lister-token &lt;driver&gt; &lt;pin&gt;</code></td><td>Liste les certificats USB</td></tr>
+        <tr><td><code>lister-p12 &lt;p12&gt; &lt;mdp&gt;</code></td><td>Liste les certificats PKCS#12</td></tr>
+    </table>
+
+    <h3>SigningServer.java</h3>
+    <p>Serveur HTTP base sur Javalin exposant l'API REST sur <code>localhost:9876</code>.
+       Configure le CORS pour les origines autorisees et route les requetes vers les handlers.</p>
+
+    <h3>ElFatooraSignature.java</h3>
+    <p>Coeur du systeme. Implemente la signature XAdES-BASELINE-B conforme aux specifications
+       ElFatoora en utilisant la librairie EU DSS. Gere le nettoyage du XML, la creation
+       des parametres de signature et l'injection de la signature dans le document.</p>
+
+    <h3>Pkcs11TokenJDK17.java</h3>
+    <p>Wrapper de compatibilite. La librairie DSS 6.0 utilise l'ancienne API PKCS#11
+       (<code>new SunPKCS11(InputStream)</code>) supprimee dans JDK 9+. Cette classe utilise
+       l'API moderne <code>Provider.configure(String)</code> introduite dans JDK 9.</p>
+
+    <h3>ElFatooraValidation.java</h3>
+    <p>Valide les signatures XAdES sur les documents XML signes en utilisant le framework
+       de validation de DSS (mode hors-ligne, sans verification OCSP/CRL).</p>
+
+    <h3>XmlUtils.java</h3>
+    <p>Utilitaires de preparation XML : conversion en format compact (unpretty),
+       detection de caracteres problematiques, verification de signatures existantes.</p>
+
+    <h3>SystemTrayManager.java</h3>
+    <p>Gere l'icone dans la barre des taches Windows avec menu contextuel
+       et notification de demarrage. Utilise une Frame invisible de type UTILITY
+       pour forcer l'initialisation AWT en mode GUI.</p>
+</div>
+
+<!-- CHAPITRE 4 -->
+<div class="chapter" id="ch4">
+    <h1>4. API REST</h1>
+
+    <p>Le service expose une API REST sur <code>http://localhost:9876</code>.</p>
+
+    <h2 id="ch4-1">4.1 Endpoints</h2>
+
+    <h3>Verification du service</h3>
+    <div class="endpoint">
+        <span class="method method-get">GET</span>
+        <code>/status</code>
+    </div>
+    <p>Verifie que le service est actif.</p>
+    <p><strong>Reponse :</strong></p>
+    <pre><code>{
+    "status": "running",
+    "version": "1.0.0"
+}</code></pre>
+
+    <h3>Liste des certificats</h3>
+    <div class="endpoint">
+        <span class="method method-get">GET</span>
+        <code>/certificates?pin=XXXX&amp;driver=C:\...\eTPKCS11.dll</code>
+    </div>
+    <p>Liste les certificats presents sur la cle USB.</p>
+    <table>
+        <tr><th>Parametre</th><th>Type</th><th>Requis</th><th>Description</th></tr>
+        <tr><td><code>pin</code></td><td>string</td><td>Oui</td><td>Code PIN du token</td></tr>
+        <tr><td><code>driver</code></td><td>string</td><td>Non</td><td>Chemin du driver PKCS#11 (defaut: eTPKCS11.dll)</td></tr>
+    </table>
+    <p><strong>Reponse :</strong></p>
+    <pre><code>{
+    "success": true,
+    "certificates": [{
+        "index": "0",
+        "subject": "CN=RACHID KHALIFA, ...",
+        "issuer": "CN=TnTrust CA - QSign1, ...",
+        "validFrom": "Thu Jan 15 ...",
+        "validTo": "Sun Jan 15 ...",
+        "serialNumber": "123456789",
+        "algorithm": "RSA"
+    }]
+}</code></pre>
+
+    <h3>Signature d'un document XML</h3>
+    <div class="endpoint">
+        <span class="method method-post">POST</span>
+        <code>/sign</code>
+    </div>
+    <p>Signe un document XML TEIF avec la cle USB.</p>
+    <p><strong>Corps de la requete (JSON) :</strong></p>
+    <pre><code>{
+    "xml": "&lt;?xml version=\"1.0\" ...?&gt;&lt;TEIF ...&gt;...&lt;/TEIF&gt;",
+    "pin": "123456",
+    "driverPath": "C:\\Windows\\System32\\eTPKCS11.dll"  // optionnel
+}</code></pre>
+    <p><strong>Reponse succes :</strong></p>
+    <pre><code>{
+    "success": true,
+    "signedXml": "&lt;?xml ...?&gt;&lt;TEIF ...&gt;...&lt;ds:Signature ...&gt;...&lt;/TEIF&gt;"
+}</code></pre>
+    <p><strong>Reponse erreur :</strong></p>
+    <pre><code>{
+    "success": false,
+    "error": "Erreur lors de la signature",
+    "errorMessage": "CKR_PIN_INCORRECT",
+    "stacktrace": "..."
+}</code></pre>
+
+    <h3>Validation d'une signature</h3>
+    <div class="endpoint">
+        <span class="method method-post">POST</span>
+        <code>/validate</code>
+    </div>
+    <p>Valide la signature d'un document XML signe.</p>
+    <p><strong>Corps de la requete (JSON) :</strong></p>
+    <pre><code>{
+    "signedXml": "&lt;?xml ...?&gt;&lt;TEIF ...&gt;&lt;ds:Signature ...&gt;...&lt;/TEIF&gt;"
+}</code></pre>
+    <p><strong>Reponse :</strong></p>
+    <pre><code>{
+    "success": true,
+    "valid": true
+}</code></pre>
+
+    <h2 id="ch4-2">4.2 Configuration CORS</h2>
+    <p>Les origines autorisees sont :</p>
+    <table>
+        <tr><th>Origine</th><th>Environnement</th></tr>
+        <tr><td><code>http://localhost:5173</code></td><td>Developpement (Vite)</td></tr>
+        <tr><td><code>http://localhost:3000</code></td><td>Developpement (alternatif)</td></tr>
+        <tr><td><code>http://localhost:3009</code></td><td>Developpement (alternatif)</td></tr>
+        <tr><td><code>https://app.clic2up.com</code></td><td>Production</td></tr>
+    </table>
+</div>
+
+<!-- CHAPITRE 5 -->
+<div class="chapter" id="ch5">
+    <h1>5. Signature electronique</h1>
+
+    <h2 id="ch5-1">5.1 Standard XAdES-BASELINE-B</h2>
+    <p>La signature utilise le standard europeen <strong>XAdES-BASELINE-B</strong> (XML Advanced Electronic Signatures)
+       defini par le reglement eIDAS. C'est le niveau de base qui garantit :</p>
+    <ul>
+        <li>L'integrite du document (toute modification invalide la signature)</li>
+        <li>L'authentification du signataire (certificat inclus)</li>
+        <li>La non-repudiation (le signataire ne peut pas nier avoir signe)</li>
+    </ul>
+
+    <h3>Parametres de signature</h3>
+    <table>
+        <tr><th>Parametre</th><th>Valeur</th></tr>
+        <tr><td>Niveau</td><td><code>XAdES-BASELINE-B</code></td></tr>
+        <tr><td>Packaging</td><td><code>ENVELOPED</code> (signature dans le XML)</td></tr>
+        <tr><td>Algorithme de hachage</td><td><code>SHA-256</code></td></tr>
+        <tr><td>Algorithme de signature</td><td><code>RSA-SHA256</code></td></tr>
+        <tr><td>Role du signataire</td><td><code>Fournisseur</code></td></tr>
+    </table>
+
+    <h2 id="ch5-2">5.2 Politique de signature ElFatoora</h2>
+    <table>
+        <tr><th>Champ</th><th>Valeur</th></tr>
+        <tr><td>OID</td><td><code>urn:2.16.788.1.2.1</code></td></tr>
+        <tr><td>Description</td><td>Politique de signature de la facture electronique</td></tr>
+        <tr><td>Qualificateur</td><td><code>OID_AS_URN</code></td></tr>
+        <tr><td>URL du document</td><td><code>http://www.tradenet.com.tn/portal/telecharger...</code></td></tr>
+        <tr><td>Hachage de la politique</td><td><code>SHA-256</code></td></tr>
+    </table>
+
+    <h2 id="ch5-3">5.3 Acces a la cle USB (PKCS#11)</h2>
+    <p>L'acces a la cle USB SafeNet se fait via le standard <strong>PKCS#11</strong>
+       (Cryptographic Token Interface Standard).</p>
+
+    <h3>Driver SafeNet</h3>
+    <table>
+        <tr><th>Propriete</th><th>Valeur</th></tr>
+        <tr><td>Driver par defaut</td><td><code>C:\Windows\System32\eTPKCS11.dll</code></td></tr>
+        <tr><td>Provider Java</td><td><code>SunPKCS11</code></td></tr>
+        <tr><td>Type de KeyStore</td><td><code>PKCS11</code></td></tr>
+    </table>
+
+    <div class="warn-box">
+        <strong>Compatibilite JDK 17 :</strong> La librairie DSS 6.0 utilise l'ancienne API
+        <code>new SunPKCS11(InputStream)</code> supprimee dans JDK 9. La classe
+        <code>Pkcs11TokenJDK17</code> corrige ce probleme en utilisant l'API moderne
+        <code>Security.getProvider("SunPKCS11").configure(config)</code>.
+    </div>
+
+    <h3>Configuration PKCS#11</h3>
+    <pre><code>--name=clic2up-sign
+library=C:\Windows\System32\eTPKCS11.dll</code></pre>
+</div>
+
+<!-- CHAPITRE 6 -->
+<div class="chapter" id="ch6">
+    <h1>6. Compilation et packaging</h1>
+
+    <h2 id="ch6-1">6.1 Compilation du JAR</h2>
+    <p>La compilation cree un <strong>fat JAR</strong> contenant toutes les dependances :</p>
+    <pre><code>mvn clean package</code></pre>
+    <p>Resultat : <code>target/clic2up-sign.jar</code> (~29 MB)</p>
+    <p>Le fat JAR est cree par <strong>maven-shade-plugin</strong> qui :</p>
+    <ul>
+        <li>Inclut toutes les dependances dans un seul JAR</li>
+        <li>Merge les fichiers <code>META-INF/services</code> (SPI) avec <code>ServicesResourceTransformer</code></li>
+        <li>Filtre les fichiers de signature (<code>*.SF</code>, <code>*.DSA</code>, <code>*.RSA</code>)</li>
+        <li>Configure le manifest avec la classe principale <code>com.clic2up.Main</code></li>
+    </ul>
+
+    <h2 id="ch6-2">6.2 Packaging en executable Windows</h2>
+    <p>L'outil <strong>jpackage</strong> (inclus dans le JDK 17) cree un executable autonome
+       avec un JRE embarque :</p>
+    <pre><code>build-exe.bat</code></pre>
+    <p>Ce script execute :</p>
+    <pre><code>jpackage --type app-image
+         --name clic2up-sign
+         --input packaging\input
+         --main-jar clic2up-sign.jar
+         --main-class com.clic2up.Main
+         --dest dist
+         --java-options "-Xmx256m"
+         --add-modules java.base,java.compiler,java.desktop,
+                       java.instrument,java.management,java.naming,
+                       java.security.jgss,java.sql,java.xml.crypto,
+                       jdk.crypto.cryptoki
+         --jlink-options "--strip-debug --no-header-files --no-man-pages"</code></pre>
+
+    <p>Resultat : dossier <code>dist/clic2up-sign/</code> contenant l'executable et le JRE.</p>
+
+    <h2 id="ch6-3">6.3 Creation de l'installeur</h2>
+    <p>L'installeur Windows est cree avec <strong>Inno Setup 6</strong> :</p>
+    <pre><code>build-installer.bat</code></pre>
+    <p>Ce script enchaine trois etapes :</p>
+    <ol>
+        <li><strong>Generation de l'icone</strong> (<code>generate-icon.java</code>) : cree le fichier <code>.ico</code></li>
+        <li><strong>Packaging jpackage</strong> (<code>build-exe.bat</code>) : cree l'app-image</li>
+        <li><strong>Compilation Inno Setup</strong> (<code>ISCC.exe clic2up-sign.iss</code>) : cree l'installeur</li>
+    </ol>
+    <p>Resultat : <code>dist/clic2up-sign-setup.exe</code></p>
+
+    <h2 id="ch6-4">6.4 Optimisations</h2>
+    <table>
+        <tr><th>Optimisation</th><th>Effet</th></tr>
+        <tr>
+            <td><code>--add-modules</code> (10 modules sur ~70)</td>
+            <td>JRE : 129 MB &rarr; 71 MB</td>
+        </tr>
+        <tr>
+            <td><code>--strip-debug --no-header-files --no-man-pages</code></td>
+            <td>Supprime les symboles de debug et fichiers inutiles</td>
+        </tr>
+        <tr>
+            <td>Compression LZMA2 (Inno Setup)</td>
+            <td>100 MB &rarr; 43 MB (installeur final)</td>
+        </tr>
+    </table>
+
+    <div class="info-box">
+        <strong>Note :</strong> La compression jlink (<code>--compress=2</code>) est contre-productive
+        car Inno Setup compresse moins bien un contenu deja compresse. Mieux vaut laisser
+        la compression a Inno Setup uniquement.
+    </div>
+
+    <h3>Taille finale</h3>
+    <table>
+        <tr><th>Composant</th><th>Taille</th></tr>
+        <tr><td>clic2up-sign.exe (lanceur)</td><td>440 KB</td></tr>
+        <tr><td>app/ (JAR + librairies)</td><td>29 MB</td></tr>
+        <tr><td>runtime/ (JRE optimise)</td><td>71 MB</td></tr>
+        <tr><td><strong>Total non compresse</strong></td><td><strong>100 MB</strong></td></tr>
+        <tr><td><strong>Installeur compresse</strong></td><td><strong>43 MB</strong></td></tr>
+    </table>
+</div>
+
+<!-- CHAPITRE 7 -->
+<div class="chapter" id="ch7">
+    <h1>7. Installation</h1>
+
+    <h2 id="ch7-1">7.1 Pre-requis</h2>
+    <table>
+        <tr><th>Pre-requis</th><th>Details</th></tr>
+        <tr>
+            <td>Systeme d'exploitation</td>
+            <td>Windows 10 / 11 (64 bits)</td>
+        </tr>
+        <tr>
+            <td>SafeNet Authentication Client</td>
+            <td>Installe avec le driver <code>eTPKCS11.dll</code></td>
+        </tr>
+        <tr>
+            <td>Cle USB cryptographique</td>
+            <td>Token contenant le certificat de signature (TnTrust)</td>
+        </tr>
+        <tr>
+            <td>Espace disque</td>
+            <td>~150 MB</td>
+        </tr>
+    </table>
+
+    <div class="warn-box">
+        <strong>Pas besoin d'installer Java !</strong> Le JRE est embarque dans l'executable.
+        L'utilisateur n'a besoin d'aucune installation Java sur sa machine.
+    </div>
+
+    <h2 id="ch7-2">7.2 Procedure d'installation</h2>
+    <ol>
+        <li>Executer <code>clic2up-sign-setup.exe</code></li>
+        <li><strong>Ecran d'accueil</strong> : cliquer "Suivant"</li>
+        <li><strong>Information</strong> : lire les pre-requis, cliquer "Suivant"</li>
+        <li><strong>Dossier d'installation</strong> : choisir le dossier (defaut : <code>C:\Program Files\clic2up-sign</code>)</li>
+        <li><strong>Options</strong> :
+            <ul>
+                <li>Creer un raccourci sur le Bureau (recommande)</li>
+                <li>Lancer automatiquement au demarrage de Windows (recommande)</li>
+            </ul>
+        </li>
+        <li><strong>Installation</strong> : les fichiers sont copies</li>
+        <li><strong>Lancement</strong> : le service demarre automatiquement</li>
+        <li>Un message confirme que le service est actif</li>
+    </ol>
+
+    <h3>Apres l'installation</h3>
+    <ul>
+        <li>Une <strong>icone</strong> apparait dans la barre des taches (pres de l'horloge)</li>
+        <li>Le service est accessible sur <code>http://localhost:9876/status</code></li>
+        <li>Si le demarrage automatique est active, le service se lance a chaque demarrage de Windows</li>
+    </ul>
+
+    <h2 id="ch7-3">7.3 Desinstallation</h2>
+    <p>Via <strong>Parametres Windows</strong> &rarr; <strong>Applications</strong> &rarr; <strong>clic2up-sign</strong> &rarr; <strong>Desinstaller</strong>.</p>
+    <p>La desinstallation :</p>
+    <ul>
+        <li>Arrete le processus en cours</li>
+        <li>Supprime tous les fichiers installes</li>
+        <li>Retire les raccourcis (Bureau, Menu Demarrer, Demarrage)</li>
+    </ul>
+</div>
+
+<!-- CHAPITRE 8 -->
+<div class="chapter" id="ch8">
+    <h1>8. Interface utilisateur</h1>
+
+    <h2 id="ch8-1">8.1 Icone System Tray</h2>
+    <p>Au demarrage, clic2up-sign affiche :</p>
+    <ul>
+        <li>Une <strong>boite de dialogue</strong> confirmant que le service est actif</li>
+        <li>Une <strong>icone</strong> dans la barre des taches (cadenas blanc sur fond bleu)</li>
+        <li>Une <strong>notification bulle</strong> Windows</li>
+    </ul>
+
+    <h3>Menu contextuel (clic droit sur l'icone)</h3>
+    <table>
+        <tr><th>Option</th><th>Action</th></tr>
+        <tr><td>clic2up-sign v1.0.0</td><td>Titre (informatif)</td></tr>
+        <tr><td>Actif sur le port 9876</td><td>Statut (informatif)</td></tr>
+        <tr><td>Ouvrir le statut</td><td>Ouvre <code>localhost:9876/status</code> dans le navigateur</td></tr>
+        <tr><td>Quitter</td><td>Arrete le service et ferme l'application</td></tr>
+    </table>
+
+    <p>Le double-clic sur l'icone ouvre egalement le statut dans le navigateur.</p>
+
+    <h2 id="ch8-2">8.2 Integration frontend React</h2>
+    <p>Cote frontend (clic2up), l'integration se fait via :</p>
+    <table>
+        <tr><th>Fichier</th><th>Role</th></tr>
+        <tr><td><code>signingService.ts</code></td><td>Client HTTP vers le service local</td></tr>
+        <tr><td><code>SignInvoiceDialog.tsx</code></td><td>Dialog de signature (PIN + statut + progression)</td></tr>
+        <tr><td><code>NoteView.tsx</code></td><td>Bouton "Signer" et badge "Signee" sur les factures</td></tr>
+        <tr><td><code>teifXmlGenerator.ts</code></td><td>Generation du XML TEIF (sans placeholder signature)</td></tr>
+    </table>
+</div>
+
+<!-- CHAPITRE 9 -->
+<div class="chapter" id="ch9">
+    <h1>9. Securite</h1>
+
+    <h3>Communication</h3>
+    <ul>
+        <li>Le service ecoute uniquement sur <strong>localhost</strong> (127.0.0.1) &mdash; inaccessible depuis le reseau</li>
+        <li>CORS strictement configure : seules les origines autorisees peuvent appeler l'API</li>
+        <li>Le code PIN n'est <strong>jamais stocke</strong> &mdash; il transite uniquement en memoire le temps de la signature</li>
+    </ul>
+
+    <h3>Cle USB</h3>
+    <ul>
+        <li>La cle privee <strong>ne quitte jamais</strong> le token USB &mdash; la signature est realisee sur le token</li>
+        <li>Le code PIN est verifie par le token lors de chaque operation de signature</li>
+        <li>Apres plusieurs tentatives de PIN incorrect, le token se bloque (protection hardware)</li>
+    </ul>
+
+    <h3>Application</h3>
+    <ul>
+        <li>Aucune donnee n'est stockee localement par clic2up-sign</li>
+        <li>Le fichier log (<code>~/clic2up-sign.log</code>) ne contient jamais de PIN ou de donnees sensibles</li>
+        <li>L'application ne necessite <strong>pas</strong> de droits administrateur pour fonctionner</li>
+    </ul>
+
+    <div class="info-box">
+        <strong>Registre Windows :</strong> Contrairement a TunSign qui utilise CAPI (et necessite la modification
+        de la cle <code>DisableCapiOverrideForRSA</code>), clic2up-sign utilise PKCS#11 directement.
+        Aucune modification du registre Windows n'est necessaire.
+    </div>
+</div>
+
+<!-- CHAPITRE 10 -->
+<div class="chapter" id="ch10">
+    <h1>10. Depannage</h1>
+
+    <table>
+        <tr>
+            <th>Probleme</th>
+            <th>Cause probable</th>
+            <th>Solution</th>
+        </tr>
+        <tr>
+            <td>Le service ne repond pas</td>
+            <td>Le service n'est pas lance</td>
+            <td>Lancer <code>clic2up-sign.exe</code> ou verifier le demarrage automatique</td>
+        </tr>
+        <tr>
+            <td><code>CKR_PIN_INCORRECT</code></td>
+            <td>Mauvais code PIN</td>
+            <td>Verifier le PIN. Attention : apres plusieurs erreurs, le token se bloque</td>
+        </tr>
+        <tr>
+            <td><code>Aucune cle trouvee</code></td>
+            <td>Cle USB non connectee</td>
+            <td>Brancher la cle USB et verifier que SafeNet la detecte</td>
+        </tr>
+        <tr>
+            <td><code>SunPKCS11 not available</code></td>
+            <td>Probleme JRE</td>
+            <td>Reinstaller clic2up-sign</td>
+        </tr>
+        <tr>
+            <td><code>Error configuring SunPKCS11</code></td>
+            <td>Driver SafeNet non trouve</td>
+            <td>Verifier que SafeNet Authentication Client est installe</td>
+        </tr>
+        <tr>
+            <td>Le port 9876 est occupe</td>
+            <td>Une autre instance tourne deja</td>
+            <td>Fermer l'autre instance via le Gestionnaire des taches</td>
+        </tr>
+        <tr>
+            <td>Erreur CORS dans le navigateur</td>
+            <td>Origine non autorisee</td>
+            <td>Verifier que l'URL du frontend est dans la liste des origines CORS</td>
+        </tr>
+        <tr>
+            <td>L'icone n'apparait pas</td>
+            <td>Masquee par Windows</td>
+            <td>Cliquer sur la fleche ^ pres de l'horloge, ou activer dans Parametres > Barre des taches</td>
+        </tr>
+    </table>
+
+    <h3>Fichier de log</h3>
+    <p>En cas de probleme, consultez le fichier de log :</p>
+    <pre><code>C:\Users\&lt;votre_nom&gt;\clic2up-sign.log</code></pre>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+    <p>clic2up-sign v1.0.0 &mdash; SOCIETE WEBATG &mdash; Fevrier 2026</p>
+    <p>Document genere le 27/02/2026</p>
+</div>
+
+</body>
+</html>
