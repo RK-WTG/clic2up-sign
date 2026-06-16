@@ -10,6 +10,9 @@ dependency-reduced-pom.xml
 # Compiled class files
 *.class
 
+# Scripts de build/diagnostic jetables (chemins absolus machine)
+_*.ps1
+
 # OS / IDE
 .idea/
 *.iml

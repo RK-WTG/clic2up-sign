@@ -15,8 +15,12 @@ import java.util.Map;
  */
 public class SigningServer {
 
-    private static final String VERSION = "1.0.0";
-    private static final String DEFAULT_DRIVER = "C:\\Windows\\System32\\eTPKCS11.dll";
+    private static final String VERSION = "1.0.1";
+    // Driver PKCS#11 du token de signature TunTrust (carte Gemalto/Thales IDPrime,
+    // middleware SafeNet Authentication Client). PAS eTPKCS11.dll (= SafeNet eToken).
+    // Le front peut surcharger via le param/champ "driver"/"driverPath".
+    private static final String DEFAULT_DRIVER =
+            "C:\\Program Files\\SafeNet\\Authentication\\SAC\\x64\\IDPrimePKCS1164.dll";
     private static final Gson gson = new Gson();
 
     private final int port;
