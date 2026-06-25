@@ -8,7 +8,7 @@
 
     <groupId>com.clic2up</groupId>
     <artifactId>clic2up-sign</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
 
     <name>clic2up-sign</name>

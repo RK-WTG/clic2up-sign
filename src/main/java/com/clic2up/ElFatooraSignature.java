@@ -18,9 +18,16 @@ import java.util.*;
  */
 public class ElFatooraSignature {
 
-    private static final String POLICY_OID = "urn:2.16.788.1.2.1";
-    private static final String POLICY_DESCRIPTION = "Politique de signature de la facture electronique";
-    private static final String POLICY_URL = "http://www.tradenet.com.tn/portal/telechargerTelechargement?lien=Politique_de_Signature_de_la_facture_electronique.pdf";
+    // Politique de signature — spec V3.0 (obligatoire en prod dès le 30/06/2026,
+    // cf. Specifications_Techniques_Signature_Fournisseur_V3.0.pdf). Seul ce bloc
+    // a changé entre V2 et V3.0.
+    private static final String POLICY_OID = "urn:2.16.788.1.2.1.3";
+    private static final String POLICY_DESCRIPTION = "Politique de Signature Electronique de Tunisie TradeNet";
+    private static final String POLICY_URL = "https://www.tradenet.com.tn/Politique_Signature_Electronique_Tunisie_TradeNet.pdf";
+    // SHA-256 (base64) du PDF de politique V3.0 — valeur figée par la spec. On la
+    // force explicitement pour que le SigPolicyHash corresponde EXACTEMENT à ce
+    // qu'attend le noyau TTN (sinon DSS tenterait de hacher le PDF téléchargé).
+    private static final String POLICY_HASH_B64 = "ZKLu5TojntPu+bUfZyjaEDvkYsAh7eyyV+Hf8nUSQEE=";
     private static final String SIGNER_ROLE = "Fournisseur";
 
     /**
@@ -251,9 +258,10 @@ public class ElFatooraSignature {
 
         Policy policy = new Policy();
         policy.setId(POLICY_OID);
-        policy.setQualifier(ObjectIdentifierQualifier.OID_AS_URN);
+        policy.setQualifier(ObjectIdentifierQualifier.OID_AS_URN); // → Qualifier="OIDAsURN" (V3.0)
         policy.setDescription(POLICY_DESCRIPTION);
         policy.setDigestAlgorithm(DigestAlgorithm.SHA256);
+        policy.setDigestValue(Base64.getDecoder().decode(POLICY_HASH_B64));
         policy.setSpuri(POLICY_URL);
         params.bLevel().setSignaturePolicy(policy);
 
