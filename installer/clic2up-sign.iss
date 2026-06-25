@@ -4,7 +4,7 @@
 ; =============================================================================
 
 #define MyAppName "clic2up-sign"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.0.2"
 #define MyAppPublisher "SOCIETE WEBATG"
 #define MyAppURL "https://app.clic2up.com"
 #define MyAppExeName "clic2up-sign.exe"
