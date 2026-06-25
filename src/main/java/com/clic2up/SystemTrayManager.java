@@ -38,7 +38,7 @@ public class SystemTrayManager {
 
             PopupMenu popup = new PopupMenu();
 
-            MenuItem titleItem = new MenuItem("clic2up-sign v1.0.0");
+            MenuItem titleItem = new MenuItem("clic2up-sign v1.0");
             titleItem.setEnabled(false);
             popup.add(titleItem);
 

@@ -1,24 +1,6 @@
 package com.clic2up;
 
-/**
- * Point d'entree principal pour clic2up-sign
- *
- * Usage:
- *   clic2up-sign server [--port 9876]
- *       Lance le serveur HTTP de signature
- *
- *   clic2up-sign signer-token <facture.xml> <driver.dll> <pin> <sortie.xml>
- *       Signe une facture avec un Token USB (PKCS11)
- *
- *   clic2up-sign signer-p12 <facture.xml> <certificat.p12> <motdepasse> <sortie.xml>
- *       Signe une facture avec un fichier PKCS12
- *
- *   clic2up-sign valider <facture_signee.xml>
- *       Valide la signature d'une facture
- *
- *   clic2up-sign lister-token <driver.dll> <pin>
- *       Liste les certificats dans un Token USB
- */
+/** Point d'entrée CLI clic2up-sign (voir {@link #afficherAide()} pour les commandes). */
 public class Main {
 
     private static final int DEFAULT_PORT = 9876;

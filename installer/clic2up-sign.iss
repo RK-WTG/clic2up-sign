@@ -4,13 +4,13 @@
 ; =============================================================================
 
 #define MyAppName "clic2up-sign"
-#define MyAppVersion "1.0.2"
+#define MyAppVersion "1.0"
 #define MyAppPublisher "SOCIETE WEBATG"
 #define MyAppURL "https://app.clic2up.com"
-#define MyAppExeName "clic2up-sign.exe"
+#define MyAppExeName "clic2up-sign-" + MyAppVersion + ".exe"
 
-; Dossier contenant l'app-image generee par jpackage
-#define AppImageDir "..\dist\clic2up-sign"
+; Dossier contenant l'app-image generee par jpackage (nom versionne)
+#define AppImageDir "..\dist\clic2up-sign-" + MyAppVersion
 
 [Setup]
 AppId={{E7A3F2B1-4D5C-4E6F-8A9B-1C2D3E4F5A6B}
@@ -23,7 +23,7 @@ DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 OutputDir=..\dist
-OutputBaseFilename=clic2up-sign-setup
+OutputBaseFilename=clic2up-sign-{#MyAppVersion}-setup
 SetupIconFile=clic2up-sign.ico
 Compression=lzma2/max
 SolidCompression=yes

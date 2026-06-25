@@ -8,10 +8,8 @@ import java.security.Provider;
 import java.security.Security;
 
 /**
- * Token PKCS#11 compatible JDK 9+ (17, 21, etc.)
- *
- * DSS 6.0 utilise une methode d'initialisation SunPKCS11 obsolete (JDK < 9).
- * Cette classe utilise l'API JDK 9+ : Provider.configure(String).
+ * Token PKCS#11 compatible JDK 9+ : DSS 6.0 initialise SunPKCS11 via une API
+ * obsolète (JDK < 9) ; on utilise Provider.configure(String) à la place.
  */
 public class Pkcs11TokenJDK17 extends AbstractKeyStoreTokenConnection {
 
@@ -19,7 +17,6 @@ public class Pkcs11TokenJDK17 extends AbstractKeyStoreTokenConnection {
     private final KeyStore.PasswordProtection password;
 
     public Pkcs11TokenJDK17(String pkcs11Driver, String pin) throws Exception {
-        // Configuration PKCS#11 au format JDK 9+
         String config = "--name=clic2up-sign\nlibrary=" + pkcs11Driver;
 
         Provider base = Security.getProvider("SunPKCS11");
@@ -53,7 +50,7 @@ public class Pkcs11TokenJDK17 extends AbstractKeyStoreTokenConnection {
         try {
             Security.removeProvider(provider.getName());
         } catch (Exception e) {
-            // Ignore cleanup errors
+            // cleanup best-effort
         }
     }
 }

@@ -8,7 +8,7 @@
 
     <groupId>com.clic2up</groupId>
     <artifactId>clic2up-sign</artifactId>
-    <version>1.0.2</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <name>clic2up-sign</name>
@@ -135,7 +135,7 @@
                                 </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                             </transformers>
-                            <finalName>clic2up-sign</finalName>
+                            <finalName>clic2up-sign-${project.version}</finalName>
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
