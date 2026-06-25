@@ -13,10 +13,9 @@ import java.util.Map;
 public class SigningServer {
 
     private static final String VERSION = "1.0";
-    // Driver PKCS#11 du token TunTrust (Gemalto/Thales IDPrime, middleware SafeNet),
-    // PAS eTPKCS11.dll. Surchargeable par le champ/param "driver"/"driverPath".
-    private static final String DEFAULT_DRIVER =
-            "C:\\Program Files\\SafeNet\\Authentication\\SAC\\x64\\IDPrimePKCS1164.dll";
+    // Driver PKCS#11 : si le champ/param "driver"/"driverPath" est absent, on passe null
+    // -> ElFatooraSignature.ouvrirToken essaie automatiquement les modules connus
+    //    (IDPrimePKCS1164.dll puis eTPKCS11.dll). Le front peut toujours forcer un chemin.
     private static final Gson gson = new Gson();
 
     private final int port;
@@ -74,7 +73,7 @@ public class SigningServer {
     /** GET /certificates?pin=...&driver=... */
     private void handleCertificates(Context ctx) {
         String pin = ctx.queryParam("pin");
-        String driver = ctx.queryParamAsClass("driver", String.class).getOrDefault(DEFAULT_DRIVER);
+        String driver = ctx.queryParam("driver"); // null => fallback automatique
 
         if (pin == null || pin.isEmpty()) {
             ctx.status(400).json(Map.of("success", false, "error", "Le parametre 'pin' est requis"));
@@ -84,7 +83,7 @@ public class SigningServer {
         try {
             var certificates = ElFatooraSignature.listerCertificatsAvecChaine(driver, pin);
             ctx.json(Map.of("success", true, "certificates", certificates));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             ctx.status(500).json(errorResponse("Erreur lors de la lecture des certificats", e));
         }
     }
@@ -109,7 +108,7 @@ public class SigningServer {
         try {
             String signatureValue = ElFatooraSignature.signerHashAvecToken(data, driver, pin, certificate);
             ctx.json(Map.of("success", true, "signatureValue", signatureValue));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             ctx.status(500).json(errorResponse("Erreur lors de la signature du hash", e));
         }
     }
@@ -133,7 +132,7 @@ public class SigningServer {
         try {
             String signedXml = ElFatooraSignature.signerXmlEnMemoire(xml, driver, pin);
             ctx.json(Map.of("success", true, "signedXml", signedXml));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             Map<String, Object> err = new java.util.HashMap<>(errorResponse("Erreur lors de la signature", e));
             err.put("xmlPreview", xml.substring(0, Math.min(200, xml.length())));
             ctx.status(500).json(err);
@@ -153,7 +152,7 @@ public class SigningServer {
         try {
             boolean valid = ElFatooraValidation.validerSignatureEnMemoire(signedXml);
             ctx.json(Map.of("success", true, "valid", valid));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             ctx.status(500).json(errorResponse("Erreur lors de la validation", e));
         }
     }
@@ -166,7 +165,7 @@ public class SigningServer {
     private String getDriver(JsonObject body) {
         return body.has("driverPath") && !body.get("driverPath").isJsonNull()
                 ? body.get("driverPath").getAsString()
-                : DEFAULT_DRIVER;
+                : null; // null => fallback automatique cote ElFatooraSignature
     }
 
     private String getJsonString(JsonObject obj, String key) {
@@ -176,14 +175,51 @@ public class SigningServer {
         return obj.get(key).getAsString();
     }
 
-    private Map<String, Object> errorResponse(String message, Exception e) {
+    private Map<String, Object> errorResponse(String message, Throwable e) {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
         return Map.of(
                 "success", false,
-                "error", message,
+                "message", messageUtilisateur(e), // message FR pret a afficher par le front
+                "error", message,                 // contexte technique
                 "errorMessage", e.getMessage() != null ? e.getMessage() : "Unknown error",
                 "stacktrace", sw.toString()
         );
+    }
+
+    /**
+     * Traduit une exception technique en message francais affichable par le front.
+     * Couvre les cas frequents : pilote absent, cle non branchee, PIN incorrect/bloque.
+     */
+    private static String messageUtilisateur(Throwable e) {
+        StringBuilder sb = new StringBuilder();
+        for (Throwable t = e; t != null; t = t.getCause()) {
+            if (t.getMessage() != null) sb.append(' ').append(t.getMessage());
+            sb.append(' ').append(t.getClass().getName());
+        }
+        String u = sb.toString().toUpperCase();
+
+        if (u.contains("AUCUN MODULE PKCS#11") || u.contains("CONFIGURING SUNPKCS11")
+                || u.contains("SUNPKCS11 PROVIDER NOT AVAILABLE") || u.contains("UNSATISFIEDLINK")
+                || u.contains("CANNOT BE FOUND") || u.contains("NO SUCH FILE")) {
+            return "Aucun pilote de signature n'a ete detecte sur ce poste. "
+                    + "Veuillez installer le pilote de la cle (SafeNet Authentication Client).";
+        }
+        if (u.contains("AUCUNE CLE TROUVEE") || u.contains("CKR_TOKEN_NOT_PRESENT")
+                || u.contains("TOKEN NOT PRESENT") || u.contains("CKR_DEVICE_REMOVED")
+                || u.contains("CKR_SLOT_ID_INVALID")) {
+            return "Aucune cle USB de signature detectee. Veuillez brancher votre cle puis reessayer.";
+        }
+        if (u.contains("PIN_LOCKED") || u.contains("CKR_PIN_LOCKED")) {
+            return "Votre cle de signature est bloquee (trop de tentatives de code PIN). "
+                    + "Veuillez la debloquer aupres de TunTrust.";
+        }
+        if (u.contains("CKR_PIN") || u.contains("PIN_INCORRECT") || u.contains("FAILEDLOGIN")
+                || u.contains("PIN")) {
+            return "Code PIN incorrect. Veuillez reessayer "
+                    + "(attention : la cle se bloque apres plusieurs erreurs).";
+        }
+        return "Erreur lors de la signature. Veuillez verifier que la cle USB est branchee, "
+                + "que le pilote est installe, puis reessayer.";
     }
 }

@@ -24,6 +24,72 @@ public class ElFatooraSignature {
     private static final String POLICY_HASH_B64 = "ZKLu5TojntPu+bUfZyjaEDvkYsAh7eyyV+Hf8nUSQEE=";
     private static final String SIGNER_ROLE = "Fournisseur";
 
+    // Modules PKCS#11 candidats, du plus specifique (IDPrime natif) au plus standard
+    // (eTPKCS11 dans System32). Les deux accedent a la carte IDPrime TunTrust.
+    private static final List<String> DRIVER_CANDIDATES = Arrays.asList(
+            "C:\\Program Files\\SafeNet\\Authentication\\SAC\\x64\\IDPrimePKCS1164.dll",
+            "C:\\Windows\\System32\\eTPKCS11.dll");
+
+    /**
+     * Ouvre un token PKCS#11. Si un driver est fourni explicitement, il est utilise tel
+     * quel. Sinon, on essaie les modules candidats existants (DRIVER_CANDIDATES) jusqu'a
+     * en trouver un qui s'ouvre et expose au moins une cle.
+     *
+     * Securite PIN : si un module trouve le token mais que le PIN est errone/verrouille,
+     * on s'arrete immediatement (on ne re-tente PAS avec les autres modules, ce qui
+     * consommerait inutilement des tentatives de PIN et risquerait de bloquer la carte).
+     */
+    static Pkcs11TokenJDK17 ouvrirToken(String driverExplicite, String pin) throws Exception {
+        if (driverExplicite != null && !driverExplicite.isBlank()) {
+            return new Pkcs11TokenJDK17(driverExplicite, pin);
+        }
+        boolean moduleTrouve = false; // au moins un module candidat present sur le poste
+        Exception derniere = null;
+        for (String candidat : DRIVER_CANDIDATES) {
+            if (!new File(candidat).exists()) {
+                continue;
+            }
+            moduleTrouve = true;
+            Pkcs11TokenJDK17 token = null;
+            try {
+                token = new Pkcs11TokenJDK17(candidat, pin);
+                if (!token.getKeys().isEmpty()) {
+                    return token;
+                }
+                token.close();
+            } catch (Exception e) {
+                if (token != null) {
+                    try { token.close(); } catch (Exception ignore) { /* best-effort */ }
+                }
+                if (estErreurPin(e)) {
+                    throw e; // PIN errone : ne pas gaspiller d'essais sur les autres modules
+                }
+                derniere = e; // module/token indisponible : essayer le candidat suivant
+            }
+        }
+        if (!moduleTrouve) {
+            // aucun fichier de module present -> pilote non installe
+            throw new RuntimeException("Aucun module PKCS#11 installe "
+                    + "(IDPrimePKCS1164.dll / eTPKCS11.dll). Installer SafeNet Authentication Client.");
+        }
+        // module(s) present(s) mais aucun token accessible -> cle non branchee
+        throw new RuntimeException(
+                "Aucune cle trouvee dans le Token USB (pilote present mais aucune cle USB detectee).",
+                derniere);
+    }
+
+    /** Detecte une erreur liee au PIN (incorrect/verrouille) dans la chaine d'exceptions. */
+    private static boolean estErreurPin(Throwable e) {
+        for (Throwable t = e; t != null; t = t.getCause()) {
+            String cls = t.getClass().getName().toUpperCase();
+            String msg = t.getMessage() == null ? "" : t.getMessage().toUpperCase();
+            if (cls.contains("FAILEDLOGIN") || msg.contains("PIN") || msg.contains("FAILEDLOGIN")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** Signe un XML complet en mémoire avec un token USB (DSS full XAdES). */
     public static String signerXmlEnMemoire(String xmlContent, String pkcs11Driver, String pin) throws Exception {
         String cleanXml = xmlContent
@@ -34,7 +100,7 @@ public class ElFatooraSignature {
                 .trim();
         cleanXml = retirerPlaceholderSignature(cleanXml);
 
-        try (Pkcs11TokenJDK17 token = new Pkcs11TokenJDK17(pkcs11Driver, pin)) {
+        try (Pkcs11TokenJDK17 token = ouvrirToken(pkcs11Driver, pin)) {
             List<DSSPrivateKeyEntry> keys = token.getKeys();
             if (keys.isEmpty()) {
                 throw new RuntimeException("Aucune cle trouvee dans le Token USB");
@@ -51,7 +117,7 @@ public class ElFatooraSignature {
     public static String signerHashAvecToken(String dataBase64, String pkcs11Driver,
                                               String pin, String certificateB64) throws Exception {
         byte[] data = Base64.getDecoder().decode(dataBase64);
-        try (Pkcs11TokenJDK17 token = new Pkcs11TokenJDK17(pkcs11Driver, pin)) {
+        try (Pkcs11TokenJDK17 token = ouvrirToken(pkcs11Driver, pin)) {
             List<DSSPrivateKeyEntry> keys = token.getKeys();
             if (keys.isEmpty()) {
                 throw new RuntimeException("Aucune cle trouvee dans le Token USB");
@@ -79,7 +145,7 @@ public class ElFatooraSignature {
     /** Liste les certificats avec le DER base64 du signataire et de sa chaîne (KeyInfo/SigningCertificateV2). */
     public static List<Map<String, Object>> listerCertificatsAvecChaine(String pkcs11Driver, String pin) throws Exception {
         List<Map<String, Object>> result = new ArrayList<>();
-        try (Pkcs11TokenJDK17 token = new Pkcs11TokenJDK17(pkcs11Driver, pin)) {
+        try (Pkcs11TokenJDK17 token = ouvrirToken(pkcs11Driver, pin)) {
             List<DSSPrivateKeyEntry> keys = token.getKeys();
             for (int i = 0; i < keys.size(); i++) {
                 DSSPrivateKeyEntry key = keys.get(i);
@@ -129,7 +195,7 @@ public class ElFatooraSignature {
     /** Signe une facture (fichier) avec un token USB. */
     public static void signerAvecPkcs11(String factureXmlPath, String pkcs11Driver,
                                          String pin, String outputPath) throws Exception {
-        try (Pkcs11TokenJDK17 token = new Pkcs11TokenJDK17(pkcs11Driver, pin)) {
+        try (Pkcs11TokenJDK17 token = ouvrirToken(pkcs11Driver, pin)) {
             List<DSSPrivateKeyEntry> keys = token.getKeys();
             if (keys.isEmpty()) {
                 throw new RuntimeException("Aucune cle trouvee dans le Token USB");
@@ -213,7 +279,7 @@ public class ElFatooraSignature {
 
     /** Liste console des certificats d'un token USB. */
     public static void listerCertificatsPkcs11(String pkcs11Driver, String pin) throws Exception {
-        try (Pkcs11TokenJDK17 token = new Pkcs11TokenJDK17(pkcs11Driver, pin)) {
+        try (Pkcs11TokenJDK17 token = ouvrirToken(pkcs11Driver, pin)) {
             afficherCertificats(token.getKeys());
         }
     }
