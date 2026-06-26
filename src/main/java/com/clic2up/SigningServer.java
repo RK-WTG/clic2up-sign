@@ -28,7 +28,9 @@ public class SigningServer {
                 "http://localhost:5173",
                 "http://localhost:3000",
                 "http://localhost:3009",
-                "https://app.clic2up.com"
+                "https://app.clic2up.com",
+                "https://stg-app.clic2up.com",
+                "https://api.clic2up.com"
         };
     }
 
