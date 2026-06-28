@@ -180,20 +180,52 @@ public class SigningServer {
     private Map<String, Object> errorResponse(String message, Throwable e) {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
-        return Map.of(
-                "success", false,
-                "message", messageUtilisateur(e), // message FR pret a afficher par le front
-                "error", message,                 // contexte technique
-                "errorMessage", e.getMessage() != null ? e.getMessage() : "Unknown error",
-                "stacktrace", sw.toString()
-        );
+        ErreurSignature classe = classifier(e);
+        Map<String, Object> r = new java.util.HashMap<>();
+        r.put("success", false);
+        r.put("errorCode", classe.code);   // code stable pour aiguillage front (ne pas traduire)
+        r.put("message", classe.message);  // message FR pret a afficher par le front
+        r.put("error", message);           // contexte technique
+        r.put("errorMessage", e.getMessage() != null ? e.getMessage() : "Unknown error");
+        r.put("stacktrace", sw.toString());
+        return r;
     }
 
     /**
-     * Traduit une exception technique en message francais affichable par le front.
-     * Couvre les cas frequents : pilote absent, cle non branchee, PIN incorrect/bloque.
+     * Categories d'erreur de signature. Le {@code code} est stable (utilise par le front
+     * pour aiguiller : proposer le pilote, la cle, etc.) ; le {@code message} est le texte
+     * FR pret a afficher.
      */
-    private static String messageUtilisateur(Throwable e) {
+    private enum ErreurSignature {
+        DRIVER_NOT_INSTALLED("DRIVER_NOT_INSTALLED",
+                "Aucun pilote de signature n'a ete detecte sur ce poste. "
+                        + "Veuillez installer le pilote de la cle (SafeNet Authentication Client)."),
+        TOKEN_NOT_PRESENT("TOKEN_NOT_PRESENT",
+                "Aucune cle USB de signature detectee. Veuillez brancher votre cle puis reessayer."),
+        PIN_LOCKED("PIN_LOCKED",
+                "Votre cle de signature est bloquee (trop de tentatives de code PIN). "
+                        + "Veuillez la debloquer aupres de TunTrust."),
+        PIN_INCORRECT("PIN_INCORRECT",
+                "Code PIN incorrect. Veuillez reessayer "
+                        + "(attention : la cle se bloque apres plusieurs erreurs)."),
+        SIGN_ERROR("SIGN_ERROR",
+                "Erreur lors de la signature. Veuillez verifier que la cle USB est branchee, "
+                        + "que le pilote est installe, puis reessayer.");
+
+        final String code;
+        final String message;
+
+        ErreurSignature(String code, String message) {
+            this.code = code;
+            this.message = message;
+        }
+    }
+
+    /**
+     * Classe une exception technique en categorie metier (pilote absent, cle non branchee,
+     * PIN incorrect/bloque) en inspectant toute la chaine de causes.
+     */
+    private static ErreurSignature classifier(Throwable e) {
         StringBuilder sb = new StringBuilder();
         for (Throwable t = e; t != null; t = t.getCause()) {
             if (t.getMessage() != null) sb.append(' ').append(t.getMessage());
@@ -204,24 +236,20 @@ public class SigningServer {
         if (u.contains("AUCUN MODULE PKCS#11") || u.contains("CONFIGURING SUNPKCS11")
                 || u.contains("SUNPKCS11 PROVIDER NOT AVAILABLE") || u.contains("UNSATISFIEDLINK")
                 || u.contains("CANNOT BE FOUND") || u.contains("NO SUCH FILE")) {
-            return "Aucun pilote de signature n'a ete detecte sur ce poste. "
-                    + "Veuillez installer le pilote de la cle (SafeNet Authentication Client).";
+            return ErreurSignature.DRIVER_NOT_INSTALLED;
         }
         if (u.contains("AUCUNE CLE TROUVEE") || u.contains("CKR_TOKEN_NOT_PRESENT")
                 || u.contains("TOKEN NOT PRESENT") || u.contains("CKR_DEVICE_REMOVED")
                 || u.contains("CKR_SLOT_ID_INVALID")) {
-            return "Aucune cle USB de signature detectee. Veuillez brancher votre cle puis reessayer.";
+            return ErreurSignature.TOKEN_NOT_PRESENT;
         }
         if (u.contains("PIN_LOCKED") || u.contains("CKR_PIN_LOCKED")) {
-            return "Votre cle de signature est bloquee (trop de tentatives de code PIN). "
-                    + "Veuillez la debloquer aupres de TunTrust.";
+            return ErreurSignature.PIN_LOCKED;
         }
         if (u.contains("CKR_PIN") || u.contains("PIN_INCORRECT") || u.contains("FAILEDLOGIN")
                 || u.contains("PIN")) {
-            return "Code PIN incorrect. Veuillez reessayer "
-                    + "(attention : la cle se bloque apres plusieurs erreurs).";
+            return ErreurSignature.PIN_INCORRECT;
         }
-        return "Erreur lors de la signature. Veuillez verifier que la cle USB est branchee, "
-                + "que le pilote est installe, puis reessayer.";
+        return ErreurSignature.SIGN_ERROR;
     }
 }
